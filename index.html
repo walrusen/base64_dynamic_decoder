@@ -10,25 +10,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
-
-        // Функция для декодирования Base64 в строку UTF-8
-        function decodeBase64(encodedStr) {
-            try {
-                // Декодируем Base64
-                const decodedData = atob(encodedStr);
-                // Преобразуем байты в строку UTF-8
-                const decodedString = new TextDecoder("utf-8").decode(new Uint8Array([...decodedData].map(c => c.charCodeAt(0))));
-                return decodedString;
-            } catch (e) {
-                return "Ошибка декодирования";
-            }
+        // Декодируем из Base64 в UTF-8 строку
+        function decodeFromBase64(encodedStr) {
+            return decodeURIComponent(escape(atob(encodedStr)));
         }
 
         // Когда страница загружена
         window.onload = function() {
             const encodedString = getUrlParameter("s"); // Получаем параметр "s" из URL
             if (encodedString) {
-                const decodedString = decodeBase64(encodedString); // Декодируем строку
+                const decodedString = decodeFromBase64(encodedString); // Декодируем строку
                 document.getElementById("decoded-text").textContent = decodedString; // Отображаем результат
             } else {
                 document.getElementById("decoded-text").textContent = "Нет данных для декодирования.";
