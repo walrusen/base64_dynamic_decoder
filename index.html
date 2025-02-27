@@ -3,10 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Привет, мир!</title>
+    <title>Декодер Base64</title>
+    <script>
+        // Функция для получения параметра из URL
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Функция для декодирования Base64
+        function decodeBase64(encodedStr) {
+            try {
+                // Декодируем Base64 и выводим результат
+                return decodeURIComponent(atob(encodedStr));
+            } catch (e) {
+                return "Ошибка декодирования";
+            }
+        }
+
+        // Когда страница загружена
+        window.onload = function() {
+            const encodedString = getUrlParameter("s"); // Получаем параметр "s" из URL
+            if (encodedString) {
+                const decodedString = decodeBase64(encodedString); // Декодируем строку
+                document.getElementById("decoded-text").textContent = decodedString; // Отображаем результат
+            } else {
+                document.getElementById("decoded-text").textContent = "Нет данных для декодирования.";
+            }
+        };
+    </script>
 </head>
 <body>
-    <h1>Привет, мир!</h1>
+    <h1>Результат декодирования Base64:</h1>
+    <p id="decoded-text">Загрузка...</p>
 </body>
 </html>
-
