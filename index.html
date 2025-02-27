@@ -6,15 +6,19 @@
     <title>Декодер Base64</title>
     <script>
         // Функция для получения параметра из URL
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+        function getQueryParameter(name) {
+            const url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+            const results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
 
         // Функция для кодирования строки в Base64
         function encodeToBase64(str) {
             try {
-                // Преобразуем строку в Base64
                 const encoded = btoa(unescape(encodeURIComponent(str)));
                 return encoded;
             } catch (e) {
@@ -30,8 +34,19 @@
                 encodedStr = encodedStr.replace(/[^A-Za-z0-9+/=]/g, '');
 
                 // Декодируем строку из Base64
-                const decodedStr = atob(encodedStr);
-                return decodeURIComponent(escape(decodedStr)); // Преобразуем в UTF-8
+                const decodedBytes = atob(encodedStr);
+
+                // Преобразуем строку в массив байтов
+                const byteArray = new Uint8Array(decodedBytes.length);
+                for (let i = 0; i < decodedBytes.length; i++) {
+                    byteArray[i] = decodedBytes.charCodeAt(i);
+                }
+
+                // Декодируем UTF-8 из массива байтов
+                const decoder = new TextDecoder('utf-8');
+                const decodedStr = decoder.decode(byteArray);
+
+                return decodedStr;
             } catch (e) {
                 console.error("Ошибка при декодировании: ", e);
                 return "Ошибка при декодировании строки Base64.";
@@ -40,7 +55,7 @@
 
         // Когда страница загружена
         window.onload = function() {
-            const encodedString = getUrlParameter("s"); // Получаем параметр "s" из URL
+            const encodedString = getQueryParameter("s"); // Получаем параметр "s" из URL
 
             // Если строка есть, то декодируем её
             if (encodedString) {
