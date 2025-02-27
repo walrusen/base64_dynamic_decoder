@@ -10,14 +10,39 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
+
+        // Функция для кодирования строки в Base64
+        function encodeToBase64(str) {
+            try {
+                // Преобразуем строку в Base64
+                const encoded = btoa(unescape(encodeURIComponent(str)));
+                return encoded;
+            } catch (e) {
+                console.error("Ошибка при кодировании строки в Base64: ", e);
+                return null;
+            }
+        }
+
         // Декодируем из Base64 в UTF-8 строку
         function decodeFromBase64(encodedStr) {
-            return decodeURIComponent(escape(atob(encodedStr)));
+            try {
+                // Убираем пробелы и другие недопустимые символы из строки Base64
+                encodedStr = encodedStr.replace(/[^A-Za-z0-9+/=]/g, '');
+
+                // Декодируем строку из Base64
+                const decodedStr = atob(encodedStr);
+                return decodeURIComponent(escape(decodedStr)); // Преобразуем в UTF-8
+            } catch (e) {
+                console.error("Ошибка при декодировании: ", e);
+                return "Ошибка при декодировании строки Base64.";
+            }
         }
 
         // Когда страница загружена
         window.onload = function() {
             const encodedString = getUrlParameter("s"); // Получаем параметр "s" из URL
+
+            // Если строка есть, то декодируем её
             if (encodedString) {
                 const decodedString = decodeFromBase64(encodedString); // Декодируем строку
                 document.getElementById("decoded-text").textContent = decodedString; // Отображаем результат
@@ -25,10 +50,27 @@
                 document.getElementById("decoded-text").textContent = "Нет данных для декодирования.";
             }
         };
+
+        // Функция для кодирования текста и формирования ссылки с параметром
+        function createBase64Link() {
+            const text = prompt("Введите текст для кодирования в Base64:");
+            if (text) {
+                const encoded = encodeToBase64(text);
+                if (encoded) {
+                    const url = window.location.origin + window.location.pathname + "?s=" + encodeURIComponent(encoded);
+                    alert("Ссылка для декодирования: " + url);
+                } else {
+                    alert("Ошибка при кодировании текста.");
+                }
+            }
+        }
     </script>
 </head>
 <body>
     <h1>Результат декодирования Base64:</h1>
     <p id="decoded-text">Загрузка...</p>
+
+    <br><br>
+    <button onclick="createBase64Link()">Создать ссылку для кодирования текста</button>
 </body>
 </html>
