@@ -11,11 +11,14 @@
             return urlParams.get(name);
         }
 
-        // Функция для декодирования Base64
+        // Функция для декодирования Base64 в строку UTF-8
         function decodeBase64(encodedStr) {
             try {
-                // Декодируем Base64 и выводим результат
-                return decodeURIComponent(atob(encodedStr));
+                // Декодируем Base64
+                const decodedData = atob(encodedStr);
+                // Преобразуем байты в строку UTF-8
+                const decodedString = new TextDecoder("utf-8").decode(new Uint8Array([...decodedData].map(c => c.charCodeAt(0))));
+                return decodedString;
             } catch (e) {
                 return "Ошибка декодирования";
             }
