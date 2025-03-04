@@ -3,9 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Декодер Base64</title>
+    <title>O'HA Курьер</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .info:last-child {
+            border-bottom: none;
+        }
+
+        .info strong {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .info span {
+            font-size: 16px;
+            color: #000;
+            word-break: break-word;
+            max-width: 70%;
+        }
+
+        .copy-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:active {
+            background: #0056b3;
+        }
+
+        .copy-all-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .copy-all-btn:active {
+            background: #1e7e34;
+        }
+    </style>
     <script>
-        // Функция для получения параметра из URL
         function getQueryParameter(name) {
             const url = window.location.href;
             name = name.replace(/[\[\]]/g, '\\$&');
@@ -16,54 +107,63 @@
             return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
 
-        // Функция для кодирования строки в Base64
-        function encodeToBase64(string) {
-            return btoa(encodeURIComponent(string).replace(/%([0-9A-F]{2})/g,
-                function toSolidBytes(match, p1) {
-                    return String.fromCharCode('0x' + p1);
-            }));
-        }
-
-        // Декодируем из Base64 в UTF-8 строку
         function decodeFromBase64(encoded) {
-        return decodeURIComponent(atob(encoded).split('').map(function(c) {
+            return decodeURIComponent(atob(encoded).split('').map(function(c) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
         }
 
-        // Когда страница загружена
-        window.onload = function() {
-            const encodedString = getQueryParameter("s"); // Получаем параметр "s" из URL
-
-            // Если строка есть, то декодируем её
-            if (encodedString) {
-                const decodedString = decodeFromBase64(encodedString); // Декодируем строку
-                document.getElementById("decoded-text").textContent = decodedString; // Отображаем результат
-            } else {
-                document.getElementById("decoded-text").textContent = "Нет данных для декодирования.";
-            }
-        };
-
-        // Функция для кодирования текста и формирования ссылки с параметром
-        function createBase64Link() {
-            const text = prompt("Введите текст для кодирования в Base64:");
-            if (text) {
-                const encoded = encodeToBase64(text);
-                if (encoded) {
-                    const url = window.location.origin + window.location.pathname + "?s=" + encodeURIComponent(encoded);
-                    window.open(url, "_blank");
-                } else {
-                    alert("Ошибка при кодировании текста.");
-                }
-            }
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text);
         }
+
+        function copyAll() {
+            const order = document.getElementById("decoded-order-number").textContent;
+            const name = document.getElementById("decoded-name").textContent;
+            const phone = document.getElementById("decoded-phone").textContent;
+            const address = document.getElementById("decoded-adress").textContent;
+
+            const fullText = `Номер заказа: ${order}\nИмя: ${name}\nНомер: ${phone}\nАдрес: ${address}`;
+            navigator.clipboard.writeText(fullText);
+        }
+
+        window.onload = function() {
+            const order_number = getQueryParameter("o");
+            const name = getQueryParameter("n");
+            const phone = getQueryParameter("p");
+            const adress = getQueryParameter("a");
+
+            document.getElementById("decoded-order-number").textContent = order_number ? decodeFromBase64(order_number) : "Не указано";
+            document.getElementById("decoded-name").textContent = name ? decodeFromBase64(name) : "Не указано";
+            document.getElementById("decoded-phone").textContent = phone ? decodeFromBase64(phone) : "Не указано";
+            document.getElementById("decoded-adress").textContent = adress ? decodeFromBase64(adress) : "Не указано";
+        };
     </script>
 </head>
 <body>
-    <h1>Результат декодирования Base64:</h1>
-    <p id="decoded-text">Загрузка...</p>
-
-    <br><br>
-    <button onclick="createBase64Link()">Создать ссылку для кодирования текста</button>
+    <h1>O'HA Курьер</h1>
+    <div class="container">
+        <div class="info">
+            <strong>Номер заказа:</strong>
+            <span id="decoded-order-number">Загрузка...</span>
+        </div>
+        <div class="info">
+            <strong>Имя:</strong>
+            <span id="decoded-name">Загрузка...</span>
+            <button class="copy-btn" onclick="copyToClipboard('decoded-name')">📋</button>
+        </div>
+        <div class="info">
+            <strong>Номер:</strong>
+            <span id="decoded-phone">Загрузка...</span>
+            <button class="copy-btn" onclick="copyToClipboard('decoded-phone')">📋</button>
+        </div>
+        <div class="info">
+            <strong>Адрес:</strong>
+            <span id="decoded-adress">Загрузка...</span>
+            <button class="copy-btn" onclick="copyToClipboard('decoded-adress')">📋</button>
+        </div>
+        <button class="copy-all-btn" onclick="copyAll()">Скопировать всё</button>
+    </div>
 </body>
 </html>
