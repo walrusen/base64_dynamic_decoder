@@ -97,6 +97,20 @@
         .copy-all-btn:active {
             background: #1e7e34;
         }
+        .call-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.call-btn:active {
+    background: #1e7e34;
+}
 
         .notification {
             position: fixed;
@@ -142,6 +156,14 @@
                 showNotification("Скопировано: " + text);
             });
         }
+        function callPhone(id) {
+    const phone = document.getElementById(id).textContent.trim();
+    if (!phone || phone === "Не указано") return;
+
+    // убираем пробелы и лишние символы
+    const cleaned = phone.replace(/[^\d+]/g, '');
+    window.location.href = `tel:${cleaned}`;
+}
 
         function copyAll() {
             const order = document.getElementById("decoded-order-number").textContent;
@@ -195,6 +217,8 @@
             <strong>Номер:</strong>
             <span id="decoded-phone">Загрузка...</span>
             <button class="copy-btn" onclick="copyToClipboard('decoded-phone')">📋</button>
+            <button class="call-btn" onclick="callPhone('decoded-phone')">📞</button>
+
         </div>
         <div class="info">
             <strong>Адрес:</strong>
