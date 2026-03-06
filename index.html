@@ -132,6 +132,20 @@
             opacity: 1;
             visibility: visible;
         }
+        .whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.whatsapp-btn:active {
+    background: #1ebe5d;
+}
     </style>
     <script>
         function getQueryParameter(name) {
@@ -199,6 +213,21 @@
             document.getElementById("decoded-phone").textContent = phone ? decodeFromBase64(phone) : "Не указано";
             document.getElementById("decoded-adress").textContent = adress ? decodeFromBase64(adress) : "Не указано";
         };
+        function openWhatsApp(id) {
+    const phone = document.getElementById(id).textContent.trim();
+    if (!phone || phone === "Не указано") return;
+
+    // убираем лишние символы
+    let cleaned = phone.replace(/[^\d+]/g, '');
+
+    // если нет плюса — добавляем
+    if (!cleaned.startsWith("+")) {
+        cleaned = "+" + cleaned;
+    }
+
+    const whatsappUrl = `https://wa.me/${cleaned}`;
+    window.location.href = whatsappUrl;
+}
     </script>
 </head>
 <body>
@@ -214,13 +243,17 @@
             <button class="copy-btn" onclick="copyToClipboard('decoded-name')">📋</button>
         </div>
         <div class="info">
-            <strong>Номер:</strong>
-            <span id="decoded-phone">Загрузка...</span>
-            <button class="call-btn" onclick="callPhone('decoded-phone')">📞</button>
-            <button class="copy-btn" onclick="copyToClipboard('decoded-phone')">📋</button>
-            
+    <strong>Номер:</strong>
+    <span id="decoded-phone">Загрузка...</span>
 
-        </div>
+    <button class="call-btn" onclick="callPhone('decoded-phone')">📞</button>
+
+    <button class="whatsapp-btn" onclick="openWhatsApp('decoded-phone')">
+        🟢
+    </button>
+
+    <button class="copy-btn" onclick="copyToClipboard('decoded-phone')">📋</button>
+</div>
         <div class="info">
             <strong>Адрес:</strong>
             <span id="decoded-adress">Загрузка...</span>
