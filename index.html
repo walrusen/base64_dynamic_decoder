@@ -65,6 +65,10 @@
             text-align: left;
         }
 
+        #decoded-phone {
+            font-size: 14px;
+        }
+
         .copy-btn {
             background: #007bff;
             color: white;
@@ -74,6 +78,7 @@
             font-size: 14px;
             cursor: pointer;
             transition: background 0.2s;
+            margin-left: 6px;
         }
 
         .copy-btn:active {
@@ -97,20 +102,38 @@
         .copy-all-btn:active {
             background: #1e7e34;
         }
-        .call-btn {
-    background: #FF8433;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
 
-.call-btn:active {
-    background: #1e7e34;
-}
+        .call-btn {
+            background: #FF8433;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: 6px;
+        }
+
+        .call-btn:active {
+            background: #cc6928;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: 6px;
+        }
+
+        .whatsapp-btn:active {
+            background: #1ebe5d;
+        }
 
         .notification {
             position: fixed;
@@ -132,21 +155,8 @@
             opacity: 1;
             visibility: visible;
         }
-        .whatsapp-btn {
-    background: #25D366;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.whatsapp-btn:active {
-    background: #1ebe5d;
-}
     </style>
+
     <script>
         function getQueryParameter(name) {
             const url = window.location.href;
@@ -170,14 +180,28 @@
                 showNotification("Скопировано: " + text);
             });
         }
-        function callPhone(id) {
-    const phone = document.getElementById(id).textContent.trim();
-    if (!phone || phone === "Не указано") return;
 
-    // убираем пробелы и лишние символы
-    const cleaned = phone.replace(/[^\d+]/g, '');
-    window.location.href = `tel:${cleaned}`;
-}
+        function callPhone(id) {
+            const phone = document.getElementById(id).textContent.trim();
+            if (!phone || phone === "Не указано") return;
+
+            const cleaned = phone.replace(/[^\d+]/g, '');
+            window.location.href = `tel:${cleaned}`;
+        }
+
+        function openWhatsApp(id) {
+            const phone = document.getElementById(id).textContent.trim();
+            if (!phone || phone === "Не указано") return;
+
+            let cleaned = phone.replace(/[^\d+]/g, '');
+
+            if (!cleaned.startsWith("+")) {
+                cleaned = "+" + cleaned;
+            }
+
+            const whatsappUrl = `https://wa.me/${cleaned}`;
+            window.location.href = whatsappUrl;
+        }
 
         function copyAll() {
             const order = document.getElementById("decoded-order-number").textContent;
@@ -196,7 +220,6 @@
             notification.textContent = message;
             notification.classList.add("show");
 
-            // Скрыть уведомление через 3 секунды
             setTimeout(() => {
                 notification.classList.remove("show");
             }, 4000);
@@ -213,56 +236,40 @@
             document.getElementById("decoded-phone").textContent = phone ? decodeFromBase64(phone) : "Не указано";
             document.getElementById("decoded-adress").textContent = adress ? decodeFromBase64(adress) : "Не указано";
         };
-        function openWhatsApp(id) {
-    const phone = document.getElementById(id).textContent.trim();
-    if (!phone || phone === "Не указано") return;
-
-    // убираем лишние символы
-    let cleaned = phone.replace(/[^\d+]/g, '');
-
-    // если нет плюса — добавляем
-    if (!cleaned.startsWith("+")) {
-        cleaned = "+" + cleaned;
-    }
-
-    const whatsappUrl = `https://wa.me/${cleaned}`;
-    window.location.href = whatsappUrl;
-}
     </script>
 </head>
 <body>
     <h1>O'HA Курьер</h1>
+
     <div class="container">
         <div class="info">
             <strong>Номер заказа:</strong>
             <span id="decoded-order-number">Загрузка...</span>
         </div>
+
         <div class="info">
             <strong>Имя:</strong>
             <span id="decoded-name">Загрузка...</span>
             <button class="copy-btn" onclick="copyToClipboard('decoded-name')">📋</button>
         </div>
+
         <div class="info">
-    <strong>Номер:</strong>
-    <span id="decoded-phone">Загрузка...</span>
+            <strong>Номер:</strong>
+            <span id="decoded-phone">Загрузка...</span>
+            <button class="call-btn" onclick="callPhone('decoded-phone')">📞</button>
+            <button class="whatsapp-btn" onclick="openWhatsApp('decoded-phone')">💬</button>
+            <button class="copy-btn" onclick="copyToClipboard('decoded-phone')">📋</button>
+        </div>
 
-    <button class="call-btn" onclick="callPhone('decoded-phone')">📞</button>
-
-    <button class="whatsapp-btn" onclick="openWhatsApp('decoded-phone')">
-        💬
-    </button>
-
-    <button class="copy-btn" onclick="copyToClipboard('decoded-phone')">📋</button>
-</div>
         <div class="info">
             <strong>Адрес:</strong>
             <span id="decoded-adress">Загрузка...</span>
             <button class="copy-btn" onclick="copyToClipboard('decoded-adress')">📋</button>
         </div>
+
         <button class="copy-all-btn" onclick="copyAll()">Скопировать всё</button>
     </div>
 
-    <!-- Уведомление -->
     <div id="notification" class="notification">Скопировано в буфер обмена!</div>
 </body>
 </html>
